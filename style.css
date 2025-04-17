@@ -94,7 +94,7 @@ body{
 .playbar{
     position: absolute;
     bottom: 0;
-    background-color: rgb(3, 55, 3);
+    background-color: rgb(247, 158, 237);
     width: 100%;
     padding: 12px;
 }
@@ -170,4 +170,10 @@ body{
 .loginbtn:hover{
     font-size: 17px;
     color: black;
+}
+
+.songbutton{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
 }
