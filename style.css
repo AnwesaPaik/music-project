@@ -16,6 +16,10 @@ body{
     color: white;
 }
 
+.duration{
+
+}
+
 .left{
     width: 20vw;
     padding: 4px;
@@ -177,3 +181,39 @@ body{
     justify-content: center;
     gap: 12px;
 }
+
+
+.player-container {
+  background: black;
+  color: white;
+  padding: 15px;
+  font-family: Arial;
+  text-align: center;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  /* margin-bottom: 10px; */
+}
+
+.controls-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+#seek-bar {
+  width: 60%;
+}
+

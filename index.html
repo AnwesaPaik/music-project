@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="utility.css">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <title>Document</title>
 </head>
 
@@ -82,7 +83,7 @@
       <div class="playlist">
         <h1>Playlists</h1>
         <div class="cardcontainer">
-   
+
 
           <div class="card">
             <div class="play">
@@ -112,22 +113,37 @@
             <h2>Game of Thrones</h2>
             <p>Soundtrack</p>
           </div>
-    
+
 
 
         </div>
         <div class="playbar rounded">
-          <div class="songinfo">
-
+          <div class="player-container">
+            <div class="controls">
+              <img src="shuffle.svg" alt="">
+              <img src="prevsong.svg" alt="">
+              <img src="play.svg" id="play-button" alt="">
+              <img src="pause.svg" id="pause-button" style="display: none;" alt="">
+              <img src="nextsong.svg" alt="">
+              <img src="repeat.svg" alt="">
+            </div>
+            <div class="timeline">
+              <span id="current-time">0:00</span>
+              <input type="range" id="seek-bar" value="0" min="0" step="1">
+              <span id="duration">0:00</span>
+            </div>
           </div>
-          <div class="songbutton">
+          
+          <!-- <div class="songbutton">
             <img src="prevsong.svg" alt="">
-            <img src="play.svg" alt="">
+            <img src="play.svg" id="play-button" alt="">
+            <div class="duration" ><span id="duration">0:00</span></div>
+            <img src="pause.svg" id="pause-button" style="display: none;" alt="">
             <img src="nextsong.svg" alt="">
           </div>
           <div class="songtime">
-            
-          </div>
+
+          </div> -->
         </div>
       </div>
     </div>
