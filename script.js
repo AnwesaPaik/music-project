@@ -1,8 +1,99 @@
+const clientId = 'a610e7903cd9407baf586ee82386f082';
+const clientSecret = 'e0ebe6518ed1427f97160e9742f2fd63';
+
+let accessToken = '';
+
+async function getSpotifyToken() {
+    const result = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": "Basic " + btoa(clientId + ":" + clientSecret),
+        },
+        body: "grant_type=client_credentials"
+    });
+
+    const data = await result.json();
+    accessToken = data.access_token;
+}
+
+const searchInput = document.getElementById("searchInput");
+const songList = document.querySelector(".playlist");
+
+async function searchSpotifyTracks(query) {
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+        headers: {
+            "Authorization": "Bearer " + accessToken
+        }
+    });
+    const data = await response.json();
+    return data.tracks.items;
+}
+
+// const apiBase = "http://127.0.0.1:8080/api";
+
+// document.querySelector(".signupbtn").addEventListener("click", async () => {
+//   const email = prompt("Enter your email:");
+//   const password = prompt("Enter your password:");
+//   const res = await fetch(`${apiBase}/signup`, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({ email, password })
+//   });
+//   alert(await res.text());
+// });
+
+searchInput.addEventListener("input", async (e) => {
+    const query = e.target.value.trim();
+    if (!query) return;
+
+     // Avoid duplicate entries
+     if (searchHistory[searchHistory.length - 1] !== query) {
+        searchHistory.push(query);
+        currentHistoryIndex = searchHistory.length - 1;
+    }
+
+    await performSearch(query);
+
+    async function performSearch(query) {
+        const tracks = await searchSpotifyTracks(query);
+    
+        songList.innerHTML = ""; // Clear old
+    
+        tracks.forEach(track => {
+            const li = document.createElement("li");
+            li.classList.add("songItem");
+    
+            li.innerHTML = `
+                <img src="${track.album.images[0]?.url}" alt="${track.name}">
+                <span>${track.name}</span>
+                <span class="subtitle">${track.artists.map(a => a.name).join(", ")}</span>
+                <audio src="${track.preview_url}" class="previewAudio"></audio>
+            `;
+    
+            li.addEventListener("click", () => {
+                const audio = li.querySelector(".previewAudio");
+                document.querySelectorAll("audio").forEach(a => a.pause());
+                if (audio) audio.play();
+            });
+    
+            songList.appendChild(li);
+        });
+    }
+    
+});
+
 let audio = new Audio();
 let songs = [];
 let currentSongIndex = 0;
 let isShuffle = false;
 let isRepeat = false;
+let searchHistory = [];
+let currentHistoryIndex = -1;
+let pageHistory = [];
+let currentPageIndex = -1;
+
+
 
 // DOM
 const playBtn = document.getElementById("play-button");
@@ -54,7 +145,7 @@ function renderPlaylist() {
         card.innerHTML = `
             <img src="${imageSrc}" alt="Song Art" />
             <div class="song-title">${songTitle}</div>
-            
+            <div class="song-subtitle">Soundtrack</div>
         `;
 
         card.addEventListener("click", () => {
@@ -148,7 +239,8 @@ function playPrevious() {
 
 // Controls
 playBtn.addEventListener("click", () => {
-    if (!audio.src) loadSong(currentSongIndex);
+    if (!audio.src) 
+        loadSong(currentSongIndex);
     else {
         audio.play();
         togglePlayPause(true);
@@ -181,6 +273,32 @@ volumeSlider.addEventListener("input", () => {
 (async function () {
     await getSongs();
     if (songs.length > 0) {
-        loadSong(currentSongIndex);
+        audio = new Audio(songs[currentSongIndex]); // prepare but don't play
+        audio.volume = volumeSlider.value;
+        audio.addEventListener("loadedmetadata", () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+        audio.addEventListener("timeupdate", updateProgress);
+        audio.addEventListener("ended", handleSongEnd);
     }
 })();
+
+document.querySelector(".a1").addEventListener("click", async () => {
+    if (currentHistoryIndex > 0) {
+        currentHistoryIndex--;
+        searchInput.value = searchHistory[currentHistoryIndex];
+        await performSearch(searchHistory[currentHistoryIndex]);
+    }
+});
+
+document.querySelector(".a2").addEventListener("click", async () => {
+    if (currentHistoryIndex < searchHistory.length - 1) {
+        currentHistoryIndex++;
+        searchInput.value = searchHistory[currentHistoryIndex];
+        await performSearch(searchHistory[currentHistoryIndex]);
+    }
+});
+
+getSpotifyToken();
+
+
